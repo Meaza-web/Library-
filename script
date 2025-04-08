@@ -1,0 +1,245 @@
+import { gsap } from 'gsap';
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Navigation handling
+    setupNavigation();
+    
+    // Form submission handling
+    setupFormHandling();
+    
+    // Initial animations
+    animatePageElements();
+});
+
+function setupNavigation() {
+    const navLinks = document.querySelectorAll('header nav a');
+    const sections = document.querySelectorAll('main section');
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Update active nav link
+            navLinks.forEach(navLink => navLink.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Get the target section
+            const targetId = this.getAttribute('href').substring(1);
+            const targetSection = document.getElementById(targetId);
+            
+            // Update active section
+            sections.forEach(section => section.classList.remove('active-section'));
+            targetSection.classList.add('active-section');
+            
+            // Smooth scroll
+            window.scrollTo({
+                top: targetSection.offsetTop - 100,
+                behavior: 'smooth'
+            });
+            
+            // Animate the new section content
+            animateSectionContent(targetSection);
+        });
+    });
+    
+    // Handle scroll events for section highlighting
+    window.addEventListener('scroll', function() {
+        let currentSection = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 150;
+            const sectionHeight = section.clientHeight;
+            if (pageYOffset >= sectionTop && pageYOffset < sectionTop + sectionHeight) {
+                currentSection = section.getAttribute('id');
+            }
+        });
+        
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').substring(1) === currentSection) {
+                link.classList.add('active');
+            }
+        });
+    });
+}
+
+function setupFormHandling() {
+    const form = document.getElementById('consultationForm');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(form);
+            const formValues = Object.fromEntries(formData.entries());
+            
+            // Simulate form submission (would be replaced with actual API call)
+            console.log('Form submitted with values:', formValues);
+            
+            // Show success message (simplified for demo)
+            form.innerHTML = `
+                <div class="form-success">
+                    <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                    <h3>Thank you for reaching out!</h3>
+                    <p>We've received your consultation request and will contact you within 24 hours to schedule your session.</p>
+                </div>
+            `;
+            
+            // Animate success message
+            gsap.from('.form-success', {
+                opacity: 0,
+                y: 20,
+                duration: 0.8,
+                ease: 'power2.out'
+            });
+        });
+    }
+}
+
+function animatePageElements() {
+    // Animate header
+    gsap.from('header', {
+        y: -50,
+        opacity: 0,
+        duration: 1,
+        ease: 'power3.out'
+    });
+    
+    // Animate initial active section
+    const activeSection = document.querySelector('.active-section');
+    if (activeSection) {
+        animateSectionContent(activeSection);
+    }
+}
+
+function animateSectionContent(section) {
+    // Reset animation state
+    gsap.set(section.querySelectorAll('h2, p, .feature-card, .service-card, .booking-container'), {
+        opacity: 0,
+        y: 20
+    });
+    
+    // Create a timeline for sequential animations
+    const tl = gsap.timeline();
+    
+    // Animate section title
+    tl.to(section.querySelectorAll('h2'), {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: 'power2.out'
+    });
+    
+    // Animate remaining elements with stagger
+    tl.to(section.querySelectorAll('p:not(.feature-card p):not(.service-card p)'), {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: 'power2.out'
+    }, '-=0.3');
+    
+    // Animate cards with stagger effect
+    tl.to(section.querySelectorAll('.feature-card, .service-card'), {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: 'power2.out'
+    }, '-=0.3');
+    
+    // Animate booking container if present
+    tl.to(section.querySelectorAll('.booking-container'), {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power2.out'
+    }, '-=0.5');
+}
+
+// Add hover effects for service cards
+const serviceCards = document.querySelectorAll('.service-card');
+serviceCards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+        gsap.to(card, {
+            y: -10,
+            boxShadow: '0 15px 30px rgba(156, 138, 214, 0.25)',
+            duration: 0.3
+        });
+    });
+    
+    card.addEventListener('mouseleave', () => {
+        gsap.to(card, {
+            y: 0,
+            boxShadow: '0 4px 20px rgba(156, 138, 214, 0.15)',
+            duration: 0.3
+        });
+    });
+});
+
+// Button hover effects
+const buttons = document.querySelectorAll('.cta-button, .submit-button');
+buttons.forEach(button => {
+    button.addEventListener('mouseenter', () => {
+        gsap.to(button, {
+            scale: 1.05,
+            duration: 0.3
+        });
+    });
+    
+    button.addEventListener('mouseleave', () => {
+        gsap.to(button, {
+            scale: 1,
+            duration: 0.3
+        });
+    });
+});
+
+// Add hover effects for book cards
+const bookCards = document.querySelectorAll('.book-card');
+bookCards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+        gsap.to(card, {
+            y: -10,
+            boxShadow: '0 15px 30px rgba(156, 138, 214, 0.25)',
+            duration: 0.3
+        });
+    });
+    
+    card.addEventListener('mouseleave', () => {
+        gsap.to(card, {
+            y: 0,
+            boxShadow: '0 4px 20px rgba(156, 138, 214, 0.15)',
+            duration: 0.3
+        });
+    });
+});
+
+// Add to cart functionality
+const addToCartButtons = document.querySelectorAll('.add-to-cart');
+addToCartButtons.forEach(button => {
+    button.addEventListener('click', function() {
+        const bookTitle = this.closest('.book-card').querySelector('h3').textContent;
+        
+        // Create a notification
+        const notification = document.createElement('div');
+        notification.className = 'cart-notification';
+        notification.innerHTML = `<i class="fas fa-check-circle"></i> Added "${bookTitle}" to cart`;
+        document.body.appendChild(notification);
+        
+        // Animate the notification
+        gsap.fromTo(notification, 
+            { y: 50, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.5, onComplete: () => {
+                setTimeout(() => {
+                    gsap.to(notification, { 
+                        opacity: 0, 
+                        y: -20, 
+                        duration: 0.5,
+                        onComplete: () => notification.remove()
+                    });
+                }, 2000);
+            }}
+        );
+    });
+});
